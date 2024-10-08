@@ -35,7 +35,7 @@ function carregaArquivo(filename) {
   return { matrixLabirinto, tamanhoLinhas, tamanhoColunas, entradaLabirinto };
 }
 
-async function printMaze(matrixLabirinto) {
+async function printMatriz(matrixLabirinto) {
   await sleep(100);
   console.clear();
   matrixLabirinto.forEach((linha) => console.log(linha.join("")));
@@ -57,7 +57,7 @@ async function pesquisaSaida({
       console.log("Posição da saida:", x, y, "\n");
 
       matrixLabirinto[x][y] = "o";
-      await printMaze(matrixLabirinto);
+      await printMatriz(matrixLabirinto);
 
       return true;
     }
@@ -67,7 +67,7 @@ async function pesquisaSaida({
       matrixLabirinto[x][y] = "o";
     }
 
-    await printMaze(matrixLabirinto);
+    await printMatriz(matrixLabirinto);
 
     const direcoes = [
       [x - 1, y], // cima
@@ -97,7 +97,7 @@ async function pesquisaSaida({
 
 async function main() {
   const matriz = carregaArquivo("../data/maze.txt");
-  await printMaze(matriz.matrixLabirinto);
+  await printMatriz(matriz.matrixLabirinto);
 
   console.log("Resolvendo labirinto...\n");
 
