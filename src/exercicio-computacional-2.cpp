@@ -12,7 +12,6 @@ using namespace std;
 mutex labirinto_mutex;  // Mutex para sincronizar o acesso ao labirinto
 atomic<bool> encontrou_saida(false);  // Flag para indicar se a saída foi encontrada
 
-// Função para carregar o labirinto a partir de um arquivo
 bool carregar_labirinto(const string& caminho_arquivo, vector<vector<char>>& labirinto, int& linhas, int& colunas, pair<int, int>& inicio) {
     ifstream arquivo(caminho_arquivo);
     if (!arquivo.is_open()) {
@@ -23,7 +22,7 @@ bool carregar_labirinto(const string& caminho_arquivo, vector<vector<char>>& lab
     arquivo >> linhas >> colunas;
     labirinto.resize(linhas);
     string linha;
-    getline(arquivo, linha); // Para ler o '\n' após as dimensões
+    getline(arquivo, linha); 
 
     for (int i = 0; i < linhas; i++) {
         getline(arquivo, linha);
@@ -38,11 +37,10 @@ bool carregar_labirinto(const string& caminho_arquivo, vector<vector<char>>& lab
     return true;
 }
 
-// Função para imprimir o labirinto
+
 void imprimir_labirinto(const vector<vector<char>>& labirinto) {
     this_thread::sleep_for(chrono::milliseconds(100));
 
-    // Limpa a tela no terminal
     #ifdef _WIN32
         system("cls");
     #else
@@ -57,26 +55,23 @@ void imprimir_labirinto(const vector<vector<char>>& labirinto) {
     }
 }
 
-// Função recursiva para resolver o labirinto
 bool resolver_labirinto(vector<vector<char>>& labirinto, int linhas, int colunas, pair<int, int> inicio) {
     stack<pair<int, int>> pilha;
     pilha.push(inicio);
 
     while (!pilha.empty()) {
         if (encontrou_saida.load()) {
-            // Se a saída foi encontrada, esta thread termina
             return false;
         }
 
         auto [x, y] = pilha.top();
         pilha.pop();
 
-        // Verifica se é a saída
         if (labirinto[x][y] == 's') {
             {
                 lock_guard<mutex> guard(labirinto_mutex);
                 if (!encontrou_saida.load()) {
-                    encontrou_saida.store(true);  // Marca que a saída foi encontrada
+                    encontrou_saida.store(true);  // saída foi encontrada
                     labirinto[x][y] = 'o';
                     cout << "Saída encontrada!\n";
                     imprimir_labirinto(labirinto);
@@ -97,12 +92,10 @@ bool resolver_labirinto(vector<vector<char>>& labirinto, int linhas, int colunas
             labirinto[x][y] = '.';
         }
 
-        // Lista de possíveis direções (cima, baixo, esquerda, direita)
         vector<pair<int, int>> movimentos = {
             {x - 1, y}, {x + 1, y}, {x, y - 1}, {x, y + 1}
         };
 
-        // Filtra movimentos válidos
         vector<pair<int, int>> caminhos_validos;
         for (const auto& [nx, ny] : movimentos) {
             if (nx >= 0 && nx < linhas && ny >= 0 && ny < colunas) {
@@ -113,21 +106,17 @@ bool resolver_labirinto(vector<vector<char>>& labirinto, int linhas, int colunas
             }
         }
 
-        // Se houver mais de um caminho válido, explorar com threads
         if (caminhos_validos.size() > 1) {
             vector<thread> threads;
 
-            // Cria threads para cada um dos caminhos válidos adicionais
             for (size_t i = 1; i < caminhos_validos.size(); i++) {
                 threads.emplace_back([&labirinto, linhas, colunas, caminho = caminhos_validos[i]] {
                     resolver_labirinto(labirinto, linhas, colunas, caminho);
                 });
             }
 
-            // Explora o primeiro caminho na thread atual
             pilha.push(caminhos_validos[0]);
 
-            // Espera todas as threads adicionais terminarem
             for (auto& t : threads) {
                 if (t.joinable()) {
                     t.join();
