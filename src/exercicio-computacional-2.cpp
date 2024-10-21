@@ -39,7 +39,7 @@ bool carregar_labirinto(const string& caminho_arquivo, vector<vector<char>>& lab
 
 
 void imprimir_labirinto(const vector<vector<char>>& labirinto) {
-    this_thread::sleep_for(chrono::milliseconds(100));
+    this_thread::sleep_for(chrono::milliseconds(200));
 
     #ifdef _WIN32
         system("cls");
@@ -71,10 +71,10 @@ bool resolver_labirinto(vector<vector<char>>& labirinto, int linhas, int colunas
             {
                 lock_guard<mutex> guard(labirinto_mutex);
                 if (!encontrou_saida.load()) {
-                    encontrou_saida.store(true);  // saída foi encontrada
                     labirinto[x][y] = 'o';
-                    cout << "Saída encontrada!\n";
                     imprimir_labirinto(labirinto);
+                    cout << "Saída encontrada!\n";
+                    encontrou_saida.store(true);  // saída foi encontrada
                 }
             }
             return true;
@@ -109,7 +109,7 @@ bool resolver_labirinto(vector<vector<char>>& labirinto, int linhas, int colunas
         if (caminhos_validos.size() > 1) {
             vector<thread> threads;
 
-            for (size_t i = 1; i < caminhos_validos.size(); i++) {
+            for (size_t i = 0; i < caminhos_validos.size(); i++) {
                 threads.emplace_back([&labirinto, linhas, colunas, caminho = caminhos_validos[i]] {
                     resolver_labirinto(labirinto, linhas, colunas, caminho);
                 });
@@ -139,7 +139,7 @@ int main() {
     int linhas, colunas;
     pair<int, int> inicio;
 
-    if (!carregar_labirinto("../data/maze2.txt", labirinto, linhas, colunas, inicio)) {
+    if (!carregar_labirinto("../data/maze5.txt", labirinto, linhas, colunas, inicio)) {
         return 1;
     }
 
