@@ -24,6 +24,14 @@ Nesse foi decidido usar C++, pois seria a linguagem usada na disciplina e seria 
 
 1- Entrar na pasta `scr` pelo terminal
 
-2- Rodar o comando `g++ -o exercicio2 exercicio-computacional-2.cpp` que irá gerar um executável
+2- Rodar o comando `g++ -o exercicio2 exercicio-computacional-2.cpp` que irá gerar um executável.
 
 3- Rodar o comando `./exercicio2`
+
+Obs.: para usar outros labitintos no programa deve alterar o caminho de entrada no trecho de codigo indicado abaixo:
+
+```C++
+if (!carregar_labirinto("../data/nome_arquivo.txt", labirinto, linhas, colunas, inicio)) {
+        return 1;
+}
+```
