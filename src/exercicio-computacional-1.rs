@@ -88,7 +88,8 @@ fn resolver_labirinto(labirinto: &mut Vec<Vec<char>>, linhas: usize, colunas: us
 }
 
 fn main() -> io::Result<()> {
-    let (mut labirinto, linhas, colunas, inicio) = carregar_labirinto("../data/maze.txt")?;
+    
+    let (mut labirinto, linhas, colunas, inicio) = carregar_labirinto("../data/maze2.txt")?;
 
     imprimir_labirinto(&labirinto);
 
